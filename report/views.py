@@ -14,20 +14,39 @@ from reportlab.lib.styles import getSampleStyleSheet
 # Create your views here.
 
 @csrf_exempt
-def index(request):
+def all_doctors(request):
     if request.method == "GET":
         with urllib.request.urlopen("http://localhost:8000/doctor/api-doctor/") as url:
             data = json.loads(url.read().decode())
-            generate_pdf(data)
+            aux = formatData(data)
+            generate_pdf(aux)
             with open('generated_pdf/all_doctors.pdf',encoding="ISO8859-1",mode='r') as pdf:
                 response = HttpResponse(pdf.read(), content_type='application/pdf')
                 response['Content-Disposition'] = 'inline;filename=all_doctors.pdf'
                 return response
             pdf.closed
 
-def generate_pdf(json):
+def category_report(request, categorys):
+
+    categorys = categorys.split("&")
+
     data = []
-    data.append(["Nome", "Registro", "CPF", "Categoria"]) 
+    for category in categorys:
+        with urllib.request.urlopen("http://localhost:8000/doctor/api-doctor/list-doctor/q/?category="+ str(category)) as url:
+            jsons = json.loads(url.read().decode())
+            aux = formatData(jsons)
+            data = data + aux;
+    
+    generate_pdf(data)
+    with open('generated_pdf/all_doctors.pdf',encoding="ISO8859-1",mode='r') as pdf:
+                response = HttpResponse(pdf.read(), content_type='application/pdf')
+                response['Content-Disposition'] = 'inline;filename=all_doctors.pdf'
+                return response
+    pdf.closed
+
+
+def formatData(json):
+    data = []
 
     for element in json:
         data.append(
@@ -38,6 +57,12 @@ def generate_pdf(json):
                 element["category"]
             ]
         )
+
+    return data
+
+def generate_pdf(data):
+
+    data = [["Nome", "Registro", "CPF", "Categoria"]] + data
 
     doc = SimpleDocTemplate("generated_pdf/all_doctors.pdf", pagesize=A4, rightMargin=30,leftMargin=30, topMargin=30,bottomMargin=18)
     doc.pagesize = landscape(A4)
@@ -60,5 +85,7 @@ def generate_pdf(json):
     data2 = [[Paragraph(cell, s) for cell in row] for row in data]
     t=Table(data2)
     t.setStyle(style)
+
+
     elements.append(t)
     doc.build(elements)
