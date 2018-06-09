@@ -20,56 +20,35 @@ from io import BytesIO
 @csrf_exempt
 def all_doctors(request):
     if request.method == "GET":
-        with urllib.request.urlopen("http://localhost:8000/doctor/api-doctor/") as url:
-            data = json.loads(url.read().decode())
-            aux = formatData(data)
-
-            output = generate_pdf(aux)
-            pdf = output.getvalue()
-            output.close()
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'inline;filename=all_doctors.pdf'
-            response.write(pdf)
-            return response
-
-def category_report(request, categorys):
-
-    categorys = categorys.split("&")
-
-    data = []
-    for category in categorys:
-        with urllib.request.urlopen("http://localhost:8000/doctor/api-doctor/list-doctor/q/?category="+ str(category)) as url:
-            jsons = json.loads(url.read().decode())
-            aux = formatData(jsons)
-            data = data + aux;
-
-    output = generate_pdf(data)
-    pdf = output.getvalue()
-    output.close()
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'inline;filename=doctors_by_category.pdf'
-    response.write(pdf)
-    return response
-
+        return HttpResponse("Use post for this action")
+    if request.method == "POST":
+        data = json.loads(request.body)
+        aux = formatData(data)
+        output = generate_pdf(aux)
+        pdf = output.getvalue()
+        output.close()
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=all_doctors.pdf'
+        response.write(pdf)
+        return response
 
 def formatData(json):
-    data = []
+    data_header = []
+    data_body = []
+
+    for key in json[0].keys():
+        data_header.append(key)
 
     for element in json:
-        data.append(
-            [
-                element["name"],
-                element["registration"],
-                element["CPF"],
-                element["category"]
-            ]
-        )
+        aux = []
+        for header in data_header:
+            aux.append(element[header])
+        data_body.append(aux)
 
+    data = [data_header] + data_body
     return data
 
 def generate_pdf(data):
-
-    data = [["Nome", "Registro", "CPF", "Categoria"]] + data
 
     output = BytesIO()
     doc = SimpleDocTemplate(output, pagesize=A4, rightMargin=30,leftMargin=30, topMargin=30,bottomMargin=18)
@@ -100,39 +79,18 @@ def generate_pdf(data):
     return output
 
  
+@csrf_exempt
 def xsml_all_doctors(request):
-    with urllib.request.urlopen("http://localhost:8000/doctor/api-doctor/") as url:
-        data = json.loads(url.read().decode())
+    if request.method == "POST":
+        data = json.loads(request.body)
         aux = formatData(data)
-    
-    output = xsml_report(aux)
-    xsml = output.getvalue()
-    output.close()
-    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response['Content-Disposition'] = "attachment; filename=Relatorio.xlsx"
-
-    response.write(xsml)
-    return response
-
-
-def xsml_category(request, categorys):
-    categorys = categorys.split("&")
-    data = []
-    for category in categorys:
-        with urllib.request.urlopen("http://localhost:8000/doctor/api-doctor/list-doctor/q/?category="+ str(category)) as url:
-            jsons = json.loads(url.read().decode())
-            aux = formatData(jsons)
-            data = data + aux;
-
-    output = xsml_report(data)
-    xsml = output.getvalue()
-    output.close()
-    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response['Content-Disposition'] = "attachment; filename=Relatorio.xlsx"
-
-    response.write(xsml)
-    return response
-
+        output = xsml_report(aux)
+        xsml = output.getvalue()
+        output.close()
+        response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response['Content-Disposition'] = "attachment; filename=Relatorio.xlsx"
+        response.write(xsml)
+        return response
 
 def xsml_report(data):
     output = BytesIO()
