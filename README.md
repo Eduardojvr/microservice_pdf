@@ -1,4 +1,4 @@
-<p align="center"><a href="https://imgur.com/LbrJ2e6" target="_blank"><img width="500"src="https://imgur.com/LbrJ2e6"></a></p>
+<p align="center"><a href="https://i.imgur.com/LbrJ2e6.png" target="_blank"><img width="500"src="https://i.imgur.com/LbrJ2e6.png"></a></p>
 <p align="center">
         
 ## ℹ️ Sobre
