@@ -1,5 +1,7 @@
 <p align="center"><a href="https://i.imgur.com/LbrJ2e6.png" target="_blank"><img width="500"src="https://i.imgur.com/LbrJ2e6.png"></a></p>
 <p align="center">
+
+[![Build Status](https://travis-ci.org/Eduardojvr/gerencia_report.svg?branch=master)](https://travis-ci.org/Eduardojvr/gerencia_report)
         
 ## ℹ️ Sobre
 O Gerencia Report é um micro serviço desenvolvido para oferecer suporte a aplicações que necessitam relatorios nos formatos pdf ou xlsx, de forma em que os dados são mostrados de forma tabelar.
