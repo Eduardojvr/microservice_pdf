@@ -32,7 +32,7 @@ curl --header "Content-Type:  application/x-www-form-urlencoded" \
 
 ```
 
-***Obs*** O fomato do json a ser enviado deve sempre estar dentro de uma lista com objetos iguaus dentro dele
+***Obs*** O fomato do json a ser enviado deve sempre estar dentro de uma lista com objetos iguais dentro dele
 
 * ***Exemplo:***
 
