@@ -22,7 +22,11 @@ def all_doctors(request):
     if request.method == "GET":
         return HttpResponse("Use post for this action")
     if request.method == "POST":
-        data = json.loads(request.body)
+        if isinstance(request.body, bytes):
+            aux2 = request.body.decode("ascii")
+        else:
+            aux2 = request.body
+        data = json.loads(aux2)
         aux = formatData(data)
         output = generate_pdf(aux)
         pdf = output.getvalue()
@@ -65,7 +69,7 @@ def generate_pdf(data):
                         ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                         ('BOX', (0,0), (-1,-1), 0.25, colors.black),
     ])
-    
+
     s = getSampleStyleSheet()
     s = s["BodyText"]
     s.wordWrap = 'CJK'
@@ -78,11 +82,15 @@ def generate_pdf(data):
     doc.build(elements)
     return output
 
- 
+
 @csrf_exempt
 def xsml_all_doctors(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        if isinstance(request.body, bytes):
+            aux2 = request.body.decode("ascii")
+        else:
+            aux2 = request.body
+        data = json.loads(aux2)
         aux = formatData(data)
         output = xsml_report(aux)
         xsml = output.getvalue()
@@ -96,7 +104,7 @@ def xsml_report(data):
     output = BytesIO()
 
     book = Workbook(output)
-    sheet = book.add_worksheet('Relatorio')       
+    sheet = book.add_worksheet('Relatorio')
 
     sheet.write(0, 0, "Nome")
     sheet.write(0, 1, "Registro")
